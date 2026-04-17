@@ -1,4 +1,4 @@
-// script.js
+// script.js для сайта Руслан & Алина
 document.addEventListener('DOMContentLoaded', function() {
     const tickerElement = document.getElementById('tickerText');
     const container = document.querySelector('.ticker-container');
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const containerWidth = container.offsetWidth;
         
-        // Создаем временный элемент для измерения ширины текста
         const temp = document.createElement('span');
         temp.style.visibility = 'hidden';
         temp.style.position = 'absolute';
@@ -28,10 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const textWidth = temp.offsetWidth;
         document.body.removeChild(temp);
         
-        // Рассчитываем сколько раз нужно повторить текст
         const repeatsNeeded = Math.max(3, Math.ceil((containerWidth * 2) / textWidth) + 1);
         
-        // Создаем финальный текст
         let fullText = '';
         for (let i = 0; i < repeatsNeeded; i++) {
             fullText += baseText;
@@ -40,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
         tickerElement.textContent = fullText;
     }
     
-    // Добавляем ключевые кадры если их нет
     if (!document.querySelector('#ticker-styles')) {
         const style = document.createElement('style');
         style.id = 'ticker-styles';
@@ -53,22 +49,18 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(style);
     }
     
-    // Инициализация
     updateTicker();
     
-    // Обновляем при изменении размера окна
     let resizeTimeout;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(updateTicker, 100);
     });
     
-    // Обновляем при повороте экрана
     window.addEventListener('orientationchange', function() {
         setTimeout(updateTicker, 150);
     });
     
-    // Проверяем видимость имен на разных экранах
     console.log('Hero секция загружена. Проверьте отображение имен на вашем устройстве.');
     
     // Инициализация обработчика формы
@@ -77,15 +69,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Таймер обратного отсчета до свадьбы
 function weddingTimer() {
-    // Установите дату свадьбы (год, месяц-1, день, часы, минуты)
-    const weddingDate = new Date(2026, 8, 1, 10, 0); // 2 июля 2026, 15:00
+    const weddingDate = new Date(2026, 7, 1, 10, 0); // 1 августа 2026, 10:00
     
     function updateTimer() {
         const now = new Date().getTime();
         const distance = weddingDate - now;
         
         if (distance < 0) {
-            // Если дата уже прошла
             document.getElementById('days').textContent = '00';
             document.getElementById('hours').textContent = '00';
             document.getElementById('minutes').textContent = '00';
@@ -93,83 +83,221 @@ function weddingTimer() {
             return;
         }
         
-        // Расчет дней, часов, минут и секунд
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
         
-        // Обновление DOM с добавлением ведущего нуля
         document.getElementById('days').textContent = days < 10 ? '0' + days : days;
         document.getElementById('hours').textContent = hours < 10 ? '0' + hours : hours;
         document.getElementById('minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
         document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
     }
     
-    // Обновляем каждую секунду
     updateTimer();
     setInterval(updateTimer, 1000);
 }
 
-// Функция для отправки данных в Google Sheets
-async function submitFormToGoogleSheets(formData) {
-    // TODO: Замените этот URL на ваш URL веб-приложения Google Apps Script
-    const scriptURL = 'https://script.google.com/macros/s/-JIqDDam9f7C/exec';
-    
-    try {
-        const formDataToSend = new FormData();
-        
-        // Добавляем все данные формы
-        formDataToSend.append('name', formData.name || '');
-        formDataToSend.append('attendance', formData.attendance || '');
-        formDataToSend.append('alcohol', formData.alcohol || '');
-        
-        const response = await fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors', // Важно для Google Apps Script
-            body: formDataToSend
-        });
-        
-        // При no-cors мы не можем прочитать ответ
-        return { success: true };
-        
-    } catch (error) {
-        console.error('Ошибка при отправке:', error);
-        throw error;
+// Запускаем таймер
+document.addEventListener('DOMContentLoaded', weddingTimer);
+
+// ========== БАЗОВЫЕ СТИЛИ АНИМАЦИЙ ==========
+const coreStyles = document.createElement('style');
+coreStyles.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(coreStyles);
+
+// ========== УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО ==========
+function showModal(title, message, isError = false) {
+    const existingModal = document.getElementById('customModal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'customModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+    `;
+
+    const icon = isError ? '✕' : '✓';
+    const iconColor = isError ? '#c62828' : '#2e7d32';
+    const bgIconColor = isError ? '#ffebee' : '#e8f5e9';
+    const borderColor = isError ? '#c62828' : '#2e7d32';
+
+    modal.innerHTML = `
+        <div style="
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px 40px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s ease;
+            border-top: 3px solid ${borderColor};
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        ">
+            <div style="
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: ${bgIconColor};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 20px auto;
+            ">
+                <div style="
+                    font-size: 32px;
+                    font-weight: 400;
+                    color: ${iconColor};
+                    line-height: 1;
+                ">${icon}</div>
+            </div>
+            <h3 style="
+                font-size: 24px;
+                font-weight: 500;
+                color: #1a1a1a;
+                margin-bottom: 12px;
+                letter-spacing: -0.3px;
+            ">${title}</h3>
+            <p style="
+                font-size: 16px;
+                color: #555555;
+                margin-bottom: 28px;
+                line-height: 1.5;
+            ">${message}</p>
+            <button onclick="this.closest('#customModal').remove()" style="
+                background: #f5f5f5;
+                color: #333333;
+                border: none;
+                padding: 12px 32px;
+                border-radius: 40px;
+                font-family: inherit;
+                font-size: 15px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            " onmouseover="this.style.background='#e8e8e8'" onmouseout="this.style.background='#f5f5f5'">
+                Закрыть
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+
+    if (!isError) {
+        setTimeout(() => {
+            if (modal.parentElement) modal.remove();
+        }, 4000);
     }
 }
 
+// ========== МОДАЛЬНОЕ ОКНО ЗАГРУЗКИ ==========
+function showLoadingModal() {
+    const existingLoading = document.getElementById('loadingModal');
+    if (existingLoading) existingLoading.remove();
+    
+    const loadingModal = document.createElement('div');
+    loadingModal.id = 'loadingModal';
+    loadingModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    `;
+    loadingModal.innerHTML = `
+        <div style="
+            background: white;
+            border-radius: 16px;
+            padding: 32px 40px;
+            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        ">
+            <div style="
+                width: 50px;
+                height: 50px;
+                border: 3px solid #e0e0e0;
+                border-top-color: #999;
+                border-radius: 50%;
+                margin: 0 auto 20px;
+                animation: spin 1s linear infinite;
+            "></div>
+            <p style="
+                font-size: 15px;
+                color: #666;
+                margin: 0;
+            ">Отправка ответа...</p>
+        </div>
+    `;
+    document.body.appendChild(loadingModal);
+    return loadingModal;
+}
+
+// ========== GOOGLE SHEETS ==========
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSY_X2y6L4QxcZciYtzlTJ9GgFY5PO8KS9kjWP7P-ICs7y3eX4kx-vQrzWxmCYvxc3RQ/exec'; // ЗАМЕНИТЕ НА ВАШ URL
+
 // Функция для сбора данных из формы
+// Функция для сбора данных из формы (исправленная)
 function collectFormData(form) {
-    // Получаем имя
     const nameInput = form.querySelector('#name');
     const name = nameInput ? nameInput.value.trim() : '';
     
-    // Получаем значение радио-кнопок (присутствие)
     const attendanceRadio = form.querySelector('input[name="attendance"]:checked');
     const attendance = attendanceRadio ? attendanceRadio.value : '';
     
-    // Получаем выбранные чекбоксы алкоголя
     const alcoholCheckboxes = form.querySelectorAll('input[name="alcohol"]:checked');
     const alcoholValues = Array.from(alcoholCheckboxes).map(cb => cb.value);
-    const alcohol = alcoholValues.join(', ');
     
-    return {
-        name: name,
-        attendance: attendance,
-        alcohol: alcohol
-    };
+    return { name, attendance, alcohol: alcoholValues };
 }
 
 // Функция валидации формы
 function validateForm(formData) {
     if (!formData.name) {
-        alert('Пожалуйста, введите ваше имя');
+        showModal('Ошибка', 'Пожалуйста, введите ваше имя', true);
         return false;
     }
     
     if (!formData.attendance) {
-        alert('Пожалуйста, укажите, сможете ли вы присутствовать');
+        showModal('Ошибка', 'Пожалуйста, выберите вариант присутствия', true);
         return false;
     }
     
@@ -179,106 +307,8 @@ function validateForm(formData) {
 // Функция для очистки формы
 function resetForm(form) {
     form.reset();
-}
-
-// Функция для отображения сообщения об успехе
-function showSuccessMessage(guestName) {
-    // Создаем элемент для сообщения
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'success-message';
-    messageDiv.innerHTML = `
-        <div class="success-content">
-            <svg class="success-icon" viewBox="0 0 24 24" width="48" height="48">
-                <path fill="#4CAF50" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-            <h3>Спасибо, ${guestName}!</h3>
-            <p>Ваш ответ получен. Ждем вас на свадьбе!</p>
-            <button class="success-close-btn" onclick="this.parentElement.parentElement.remove()">Закрыть</button>
-        </div>
-    `;
-    
-    // Добавляем стили для сообщения
-    const style = document.createElement('style');
-    style.textContent = `
-        .success-message {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .success-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-            margin: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        
-        .success-icon {
-            margin-bottom: 20px;
-        }
-        
-        .success-content h3 {
-            font-family: 'Tangerine', 'Great Vibes', cursive;
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 400;
-        }
-        
-        .success-content p {
-            font-family: 'Caveat', cursive;
-            font-size: 1.3rem;
-            color: #666;
-            margin-bottom: 25px;
-        }
-        
-        .success-close-btn {
-            background-color: #595b4e;
-            color: white;
-            border: none;
-            padding: 12px 35px;
-            border-radius: 50px;
-            font-family: 'Caveat', cursive;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .success-close-btn:hover {
-            background-color: #333;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    `;
-    
-    document.head.appendChild(style);
-    document.body.appendChild(messageDiv);
-    
-    // Автоматическое закрытие через 5 секунд
-    setTimeout(() => {
-        if (messageDiv.parentNode) {
-            messageDiv.remove();
-        }
-    }, 5000);
-}
-
-// Функция для отображения сообщения об ошибке
-function showErrorMessage() {
-    alert('Произошла ошибка при отправке. Пожалуйста, попробуйте позже или свяжитесь с организатором.');
+    // Сбрасываем чекбоксы
+    form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 }
 
 // Основной обработчик формы
@@ -289,44 +319,62 @@ function initFormHandler() {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Получаем кнопку отправки
         const submitBtn = form.querySelector('.submit-btn');
         const originalText = submitBtn.textContent;
         
-        // Собираем и валидируем данные
         const formData = collectFormData(form);
         
         if (!validateForm(formData)) {
             return;
         }
         
-        // Блокируем кнопку и показываем загрузку
         submitBtn.disabled = true;
         submitBtn.textContent = 'Отправка...';
         
+        const loadingModal = showLoadingModal();
+        
         try {
-            // Отправляем данные
-            await submitFormToGoogleSheets(formData);
+            const formDataToSend = new URLSearchParams();
+            formDataToSend.append('name', formData.name);
+            formDataToSend.append('attendance', formData.attendance);
             
-            // Показываем сообщение об успехе
-            showSuccessMessage(formData.name || 'Гость');
+            for (const alcohol of formData.alcohol) {
+                formDataToSend.append('alcohol', alcohol);
+            }
             
-            // Очищаем форму
-            resetForm(form);
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formDataToSend.toString()
+            });
             
+            const result = await response.json();
+            
+            loadingModal.remove();
+            
+            if (result.result === 'success') {
+                showModal(
+                    'Спасибо, ' + formData.name + '!',
+                    'Ваш ответ получен.🎉',
+                    false
+                );
+                resetForm(form);
+            } else {
+                throw new Error(result.message || 'Ошибка отправки');
+            }
         } catch (error) {
-            console.error('Ошибка:', error);
-            showErrorMessage();
+            loadingModal.remove();
+            showModal(
+                'Ошибка',
+                error.message || 'Произошла ошибка при отправке. Пожалуйста, попробуйте ещё раз.',
+                true
+            );
         } finally {
-            // Разблокируем кнопку
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         }
     });
 }
-
-// Запускаем таймер после загрузки страницы
-document.addEventListener('DOMContentLoaded', weddingTimer);
 
 function initSimpleGallery() {
     const track = document.getElementById('galleryTrack');
@@ -335,10 +383,9 @@ function initSimpleGallery() {
     if (!track || !nextBtn) return;
     
     let currentIndex = 0;
-    const totalSlides = 2; // У нас 2 фото
+    const totalSlides = 2;
     
     nextBtn.addEventListener('click', () => {
-        // Переключаемся на следующее фото (по кругу)
         currentIndex = (currentIndex + 1) % totalSlides;
         track.style.transform = `translateX(-${currentIndex * 100}%)`;
     });
@@ -353,27 +400,23 @@ function initGallery() {
     if (!track || !prevBtn || !nextBtn) return;
     
     let currentIndex = 0;
-    const totalSlides = 2; // У нас 2 фото
+    const totalSlides = 2;
     
-    // Функция обновления позиции
     function updateGallery(index) {
         currentIndex = index;
         track.style.transform = `translateX(-${currentIndex * 100}%)`;
     }
     
-    // Обработчик для стрелки вправо
     nextBtn.addEventListener('click', () => {
         currentIndex = (currentIndex + 1) % totalSlides;
         updateGallery(currentIndex);
     });
     
-    // Обработчик для стрелки влево
     prevBtn.addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
         updateGallery(currentIndex);
     });
     
-    // Поддержка свайпов для мобильных устройств
     let touchStartX = 0;
     let touchEndX = 0;
     
@@ -383,35 +426,25 @@ function initGallery() {
     
     track.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-    
-    function handleSwipe() {
         const swipeThreshold = 50;
         const diff = touchStartX - touchEndX;
         
         if (Math.abs(diff) > swipeThreshold) {
             if (diff > 0) {
-                // Свайп влево - следующее фото
                 currentIndex = (currentIndex + 1) % totalSlides;
             } else {
-                // Свайп вправо - предыдущее фото
                 currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
             }
             updateGallery(currentIndex);
         }
-    }
+    }, { passive: true });
 }
 
-// Инициализируем галерею после загрузки страницы
+// Инициализируем галерею
 document.addEventListener('DOMContentLoaded', function() {
-    // ... существующий код ...
-    
-    // Добавьте эту строку
     initGallery();
-    initMusic(); 
+    initMusic();
 });
-
 
 // Музыка
 function initMusic() {
@@ -447,7 +480,6 @@ function initMusic() {
                 if (musicText) musicText.textContent = 'Выключить музыку';
             }).catch(e => {
                 console.error('Ошибка:', e);
-                alert('Не удалось воспроизвести музыку. Файл 1.mp3 должен быть в той же папке');
             });
         }
     });
