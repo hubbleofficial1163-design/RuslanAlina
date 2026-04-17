@@ -1737,17 +1737,17 @@ section, footer {
 
 /* Цвета - более темные и насыщенные */
 .color-circle.wine {
-    background-color: #3f722f; /* Бордовый/Винный */
+    background-color:  #807D54; /* Бордовый/Винный */
     border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
 .color-circle.olive {
-    background-color: #4A5D23; /* Темный оливковый */
+    background-color: #FFEBAE; /* Темный оливковый */
     border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
 .color-circle.mustard {
-    background-color: #D4A017; /* Насыщенный горчичный */
+    background-color: #C8D8BB; /* Насыщенный горчичный */
     border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
